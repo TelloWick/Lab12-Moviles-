@@ -72,7 +72,8 @@ fun MapScreen() {
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             properties = MapProperties(
-                mapType = MapType.HYBRID
+                mapType =
+                    MapType.SATELLITE
             ),
         ){
 
