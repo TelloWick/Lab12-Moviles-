@@ -14,6 +14,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.Marker
 
 
+
 @Composable
 fun MapScreen() {
     val ArequipaLocation = LatLng(-16.4040102, -71.559611) // Arequipa, Perú
@@ -22,18 +23,34 @@ fun MapScreen() {
     }
 
 
+
     Box(modifier = Modifier.fillMaxSize()) {
         // Añadir GoogleMap al layout
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState
         ) {
-            // Añadir marcador en Denver, Colorado
+
+            // Marcador principal
             Marker(
                 state = rememberMarkerState(position = ArequipaLocation),
-                icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE),
                 title = "Arequipa, Perú"
             )
+
+            // Varios marcadores
+            val locations = listOf(
+                LatLng(-16.433415, -71.5442652), // JLByR
+                LatLng(-16.4205151, -71.4945209), // Paucarpata
+                LatLng(-16.3524187, -71.5675994) // Zamácola
+            )
+
+            locations.forEach { location ->
+                Marker(
+                    state = rememberMarkerState(position = location),
+                    title = "Ubicación",
+                    snippet = "Punto de interés"
+                )
+            }
         }
     }
 }
