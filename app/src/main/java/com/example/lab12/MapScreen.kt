@@ -16,7 +16,14 @@ import com.google.maps.android.compose.rememberMarkerState
 import androidx.compose.runtime.*
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapType
-
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.LocationServices
 @Composable
 fun MapScreen() {
 
@@ -27,8 +34,62 @@ fun MapScreen() {
             com.google.android.gms.maps.model.CameraPosition
                 .fromLatLngZoom(arequipaLocation, 12f)
     }
-    var mapType by remember {
-        mutableStateOf(MapType.HYBRID)
+
+
+    val context = LocalContext.current
+    val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+
+    var userLocation by remember {
+        mutableStateOf<LatLng?>(null)
+    }
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+
+                if (location != null) {
+
+                    android.util.Log.d(
+                        "GPS",
+                        "LAT=${location.latitude} LON=${location.longitude}"
+                    )
+
+                    userLocation = LatLng(
+                        location.latitude,
+                        location.longitude
+                    )
+                }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        val permission = ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+
+        if (permission == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+
+                if (location != null) {
+
+                    android.util.Log.d(
+                        "GPS",
+                        "LAT=${location.latitude} LON=${location.longitude}"
+                    )
+
+                    userLocation = LatLng(
+                        location.latitude,
+                        location.longitude
+                    )
+                }
+            }
+        } else {
+            permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+        }
     }
 
     // Movimiento automático a Yura
@@ -41,6 +102,18 @@ fun MapScreen() {
             durationMs = 3000
         )
     }
+    LaunchedEffect(userLocation) {
+        userLocation?.let {
+            cameraPositionState.move(
+                CameraUpdateFactory.newLatLngZoom(
+                    it,
+                    18f
+                )
+            )
+        }
+    }
+
+
 
     // Polígono Mall Aventura
     val mallAventuraPolygon = listOf(
@@ -120,6 +193,26 @@ fun MapScreen() {
                 fillColor = Color.Blue.copy(alpha = 0.3f),
                 strokeWidth = 5f
             )
+            val ubicacionPrueba = LatLng(-16.439404764734252, -71.52563478901887)
+
+            Marker(
+                state = rememberMarkerState(position = ubicacionPrueba),
+                title = "MI GPS ACTUAL"
+            )
+            LaunchedEffect(Unit) {
+                cameraPositionState.move(
+                    CameraUpdateFactory.newLatLngZoom(
+                        ubicacionPrueba,
+                        17f
+                    )
+                )
+            }
+            userLocation?.let { location ->
+                Marker(
+                    state = rememberMarkerState(position = location),
+                    title = "MI GPS ACTUAL"
+                )
+            }
         }
     }
 }
