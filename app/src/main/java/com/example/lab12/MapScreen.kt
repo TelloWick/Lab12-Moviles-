@@ -72,8 +72,8 @@ fun MapScreen() {
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
             properties = MapProperties(
-                mapType = mapType
-            )
+                mapType = MapType.HYBRID
+            ),
         ){
 
             // Marcador principal
