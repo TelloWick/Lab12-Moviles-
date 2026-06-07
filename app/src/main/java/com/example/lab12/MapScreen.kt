@@ -73,7 +73,7 @@ fun MapScreen() {
             cameraPositionState = cameraPositionState,
             properties = MapProperties(
                 mapType =
-                    MapType.SATELLITE
+                    MapType.TERRAIN
             ),
         ){
 
