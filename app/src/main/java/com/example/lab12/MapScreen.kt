@@ -24,6 +24,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
+import com.google.maps.android.compose.Circle
+
 @Composable
 fun MapScreen() {
 
@@ -199,6 +201,15 @@ fun MapScreen() {
                 state = rememberMarkerState(position = ubicacionPrueba),
                 title = "MI GPS ACTUAL"
             )
+
+            Circle(
+                center = ubicacionPrueba,
+                radius = 100.0,
+                fillColor = Color.Blue.copy(alpha = 0.2f),
+                strokeColor = Color.Blue,
+                strokeWidth = 5f
+            )
+
             LaunchedEffect(Unit) {
                 cameraPositionState.move(
                     CameraUpdateFactory.newLatLngZoom(
